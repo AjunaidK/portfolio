@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{THEME}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta name="theme-color" content="#06070d">
+<script>(function(){var t;try{t=localStorage.getItem('theme')}catch(e){}var d=document.documentElement;d.dataset.theme=t||d.dataset.theme||'dark';d.classList.add('js')})()</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<main>
+  <section class="hero" id="top" style="padding-top:120px">
+    <canvas id="net" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <span class="status glass" id="status"><span class="dot" id="dot"></span><span id="statusText"></span></span>
+      <h1 class="name" id="name" aria-label=""></h1>
+      <div class="roles"><span class="bar"></span><span class="rot" id="rot" aria-live="polite"></span></div>
+      <p class="lede" id="lede"></p>
+      <div class="cta">
+        <a class="btn btn-grad" href="#work">See my work <span class="arrow">→</span></a>
+        <a class="btn" href="#contact">Get in touch</a>
+        <a class="btn" id="heroCv" href="/cv" target="_blank" rel="noopener" hidden>Download CV ↓</a>
+      </div>
+    </div>
+    <a class="scroll-hint mono" href="#about" aria-label="Scroll to about"><i></i>scroll</a>
+  </section>
+
+  <div class="marquee" aria-hidden="true"><div class="track" id="marquee"></div></div>
+
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-head reveal"><div><div class="eyebrow mono"><b>01</b> About</div><h2 id="aboutTitle"></h2></div></div>
+      <div class="about">
+        <div class="glass prose reveal" id="aboutBody"></div>
+        <div class="about-side">
+          <div class="portrait reveal" id="portrait" hidden><img id="portraitImg" alt=""></div>
+          <div class="stats" id="stats"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="wrap">
+      <div class="sec-head reveal"><div><div class="eyebrow mono"><b>02</b> Work</div><h2 id="workTitle"></h2></div><p class="muted" style="max-width:36ch;margin:0">Click any project for the full case study: the problem, the approach and what I learned.</p></div>
+      <div class="work" id="workGrid"></div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="wrap">
+      <div class="sec-head reveal"><div><div class="eyebrow mono"><b>03</b> Experience</div><h2 id="expTitle"></h2></div></div>
+      <ol class="tl" id="timeline"></ol>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="wrap">
+      <div class="sec-head reveal"><div><div class="eyebrow mono"><b>04</b> Skills</div><h2 id="skillsTitle"></h2></div></div>
+      <div class="skills" id="skillsGrid"></div>
+    </div>
+  </section>
+
+  <section id="github" hidden>
+    <div class="wrap">
+      <div class="sec-head reveal"><div><div class="eyebrow mono"><b>05</b> Code</div><h2 id="ghTitle"></h2></div><a class="btn btn-sm" id="ghLink" target="_blank" rel="noopener">View profile ↗</a></div>
+      <div class="gh" id="ghBody"></div>
+    </div>
+  </section>
+
+  <section id="testimonials" hidden>
+    <div class="wrap">
+      <div class="sec-head reveal"><div><div class="eyebrow mono"><b>06</b> Testimonials</div><h2 id="tTitle"></h2></div></div>
+      <div class="quotes" id="quotes"></div>
+    </div>
+  </section>
+
+  <section id="writing" hidden>
+    <div class="wrap">
+      <div class="sec-head reveal"><div><div class="eyebrow mono"><b>07</b> Writing</div><h2 id="wTitle"></h2></div></div>
+      <div class="posts reveal" id="posts"></div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <div class="glass contact-box reveal">
+        <div style="position:relative">
+          <div class="eyebrow mono"><b>08</b> Contact</div>
+          <h2 id="contactTitle"></h2>
+          <div class="contact-lines" id="contactLines"></div>
+          <div class="cta"><button class="btn btn-grad" id="copyBtn" type="button">Copy email</button><a class="btn" id="contactCv" href="/cv" target="_blank" rel="noopener" hidden>Download CV ↓</a></div>
+          <p class="copied" id="copied" aria-live="polite"></p>
+        </div>
+        <form class="cform" id="cform" novalidate hidden>
+          <div class="row2">
+            <div class="field"><input id="cName" placeholder=" " autocomplete="name" maxlength="100" required><label for="cName">Your name</label></div>
+            <div class="field"><input id="cEmail" type="email" placeholder=" " autocomplete="email" maxlength="200" required><label for="cEmail">Your email</label></div>
+          </div>
+          <div class="field"><input id="cSubject" placeholder=" " maxlength="200"><label for="cSubject">Subject (e.g. ML Engineer role)</label></div>
+          <div class="field"><textarea id="cMessage" placeholder=" " maxlength="5000" required></textarea><label for="cMessage">Message</label></div>
+          <input class="hp" id="cWebsite" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div><button class="btn btn-grad" type="submit" id="cSend">Send message <span class="arrow">→</span></button></div>
+          <p class="form-msg" id="cMsg" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/js/common.js"></script>
+<script src="/js/shell.js"></script>
+<script src="/js/net.js"></script>
+<script src="/js/site.js"></script>
+</body>
+</html>

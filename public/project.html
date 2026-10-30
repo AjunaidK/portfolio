@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{THEME}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<script>(function(){var t;try{t=localStorage.getItem('theme')}catch(e){}var d=document.documentElement;d.dataset.theme=t||d.dataset.theme||'dark';d.classList.add('js')})()</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<main class="wrap page">
+  <a class="back" href="/#work">← All work</a>
+  <div class="eyebrow mono" style="margin-top:26px;display:flex" id="cat"></div>
+  <h1 class="page-title" id="title">Loading…</h1>
+  <p class="page-lede" id="summary"></p>
+  <div class="cta" id="links"></div>
+  <div class="hero-img" id="cover"></div>
+  <div class="big-metrics" id="metrics"></div>
+  <div class="case">
+    <aside>
+      <dl class="glass" id="facts" style="margin:0"></dl>
+    </aside>
+    <div>
+      <div class="case-sec reveal" id="sProblem" hidden><h2>The problem</h2><div class="article" id="problem"></div></div>
+      <div class="case-sec reveal" id="sApproach" hidden><h2>The approach</h2><div class="article" id="approach"></div></div>
+      <div class="case-sec reveal" id="sResults" hidden><h2>Results &amp; lessons</h2><div class="article" id="results"></div></div>
+      <div class="case-sec reveal" id="sGallery" hidden><h2>Gallery</h2><div class="gallery" id="gallery"></div></div>
+    </div>
+  </div>
+  <a class="glass spot next" id="next" hidden><div><div class="mono muted">Next project</div><b id="nextTitle"></b></div><span style="font-size:2rem">→</span></a>
+</main>
+<script src="/js/common.js"></script>
+<script src="/js/shell.js"></script>
+<script src="/js/net.js"></script>
+<script>
+SITE_P.then(async site => {
+  buildShell(site);
+  const slug = decodeURIComponent(location.pathname.split('/').pop());
+  const r = await fetch('/api/projects/' + encodeURIComponent(slug));
+  if (!r.ok) { $('#title').textContent = 'Project not found'; return; }
+  const { project: p, next } = await r.json();
+  $('#cat').innerHTML = `<b>${esc(p.category || 'Project')}</b>${p.period ? ' · ' + esc(p.period) : ''}`;
+  $('#title').textContent = p.title;
+  $('#summary').textContent = p.summary || '';
+  const link = safeUrl(p.link_url);
+  $('#links').innerHTML = (link ? `<a class="btn btn-grad" href="${esc(link)}" target="_blank" rel="noopener">${esc(p.link_label || 'View project')} ↗</a>` : '') + `<a class="btn" href="/#contact">Ask me about it</a>`;
+  $('#cover').innerHTML = p.image ? `<img src="${esc(p.image)}" alt="">` : `<canvas style="width:100%;height:clamp(220px,38vw,440px);display:block" aria-hidden="true"></canvas>`;
+  if (!p.image) coverArt($('#cover canvas'), p.title);
+  $('#metrics').innerHTML = (p.metrics || []).map(m => { const [v, ...l] = m.split('|'); return `<div class="glass spot reveal"><b>${esc(v)}</b><span>${esc(l.join('|'))}</span></div>`; }).join('');
+  $('#facts').innerHTML = [['When', p.period], ['Type', p.category]].filter(x => x[1]).map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')
+    + ((p.tags || []).length ? `<dt>Stack</dt><dd><div class="tags" style="margin-top:8px">${p.tags.map(t => `<span>${esc(t)}</span>`).join('')}</div></dd>` : '');
+  for (const k of ['problem', 'approach', 'results']) if (p[k]) { $('#' + k).innerHTML = markdown(p[k]); $('#s' + k[0].toUpperCase() + k.slice(1)).hidden = false; }
+  if ((p.gallery || []).length) {
+    $('#sGallery').hidden = false;
+    $('#gallery').innerHTML = p.gallery.map(g => `<img src="${esc(g)}" alt="" loading="lazy">`).join('');
+    $('#gallery').onclick = e => { if (e.target.tagName === 'IMG') lightbox(e.target.src); };
+  }
+  if (next) { $('#next').hidden = false; $('#next').href = '/projects/' + encodeURIComponent(next.slug); $('#nextTitle').textContent = next.title; }
+  observeReveal();
+  trackView('/projects/' + slug);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{THEME}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<script>(function(){var t;try{t=localStorage.getItem('theme')}catch(e){}var d=document.documentElement;d.dataset.theme=t||d.dataset.theme||'dark';d.classList.add('js')})()</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<main class="wrap page" style="max-width:860px">
+  <a class="back" href="/#writing">← All writing</a>
+  <h1 class="page-title" id="title" style="max-width:none">Loading…</h1>
+  <p class="mono muted" id="meta"></p>
+  <div class="hero-img" id="cover" hidden></div>
+  <article class="article" id="body" style="margin-top:30px"></article>
+  <p id="ext" hidden></p>
+</main>
+<script src="/js/common.js"></script>
+<script src="/js/shell.js"></script>
+<script>
+SITE_P.then(async site => {
+  buildShell(site);
+  const slug = decodeURIComponent(location.pathname.split('/').pop());
+  const r = await fetch('/api/posts/' + encodeURIComponent(slug));
+  if (!r.ok) { $('#title').textContent = 'Post not found'; return; }
+  const { post } = await r.json();
+  $('#title').textContent = post.title;
+  $('#meta').textContent = [prettyDate(post.date), post.read_minutes ? `${post.read_minutes} min read` : ''].filter(Boolean).join(' · ');
+  if (post.cover) { $('#cover').hidden = false; $('#cover').innerHTML = `<img src="${esc(post.cover)}" alt="">`; }
+  $('#body').innerHTML = post.body ? markdown(post.body) : `<p>${esc(post.summary)}</p>`;
+  const ext = safeUrl(post.external_url);
+  if (ext) { $('#ext').hidden = false; $('#ext').innerHTML = `<a class="btn" href="${esc(ext)}" target="_blank" rel="noopener">Read the original ↗</a>`; }
+  trackView('/blog/' + slug);
+});
+</script>
+</body>
+</html>
