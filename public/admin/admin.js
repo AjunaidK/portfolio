@@ -63,8 +63,8 @@ function fieldHTML(f, value) {
     case 'bool': return `<label class="check" for="${id}"><input type="checkbox" id="${id}" data-k="${f.key}" data-t="bool" ${v === true || v === '1' ? 'checked' : ''}> ${esc(f.label)}</label>`;
     case 'textarea': return `<label for="${id}">${esc(f.label)}${hint}<textarea id="${id}" data-k="${f.key}" rows="3">${esc(v)}</textarea></label>`;
     case 'markdown': return `<label for="${id}">${esc(f.label)}${hint}<textarea class="md" id="${id}" data-k="${f.key}">${esc(v)}</textarea></label>`;
-    case 'lines': return `<label for="${id}">${esc(f.label)}${hint}<textarea id="${id}" data-k="${f.key}" data-t="lines" rows="${f.key === 'stats' ? 3 : 4}">${esc((v || []).join ? v.join('\n') : v)}</textarea></label>`;
-    case 'tags': return `<label for="${id}">${esc(f.label)}${hint}<input id="${id}" data-k="${f.key}" data-t="tags" value="${esc((v || []).join ? v.join(', ') : v)}"></label>`;
+    case 'lines': return `<label for="${id}">${esc(f.label)}${hint}<textarea id="${id}" data-k="${f.key}" data-t="lines" rows="${f.key === 'stats' ? 3 : 4}">${esc(Array.isArray(v) ? v.join('\n') : (v ?? ''))}</textarea></label>`;
+    case 'tags': return `<label for="${id}">${esc(f.label)}${hint}<input id="${id}" data-k="${f.key}" data-t="tags" value="${esc(Array.isArray(v) ? v.join(', ') : (v ?? ''))}"></label>`;
     case 'select': return `<label for="${id}">${esc(f.label)}${hint}<select id="${id}" data-k="${f.key}">${f.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`;
     case 'date': return `<label for="${id}">${esc(f.label)}${hint}<input type="date" id="${id}" data-k="${f.key}" value="${esc(v)}"></label>`;
     case 'number': return `<label for="${id}">${esc(f.label)}${hint}<input type="number" id="${id}" data-k="${f.key}" value="${esc(v)}"></label>`;
