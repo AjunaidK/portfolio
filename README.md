@@ -47,21 +47,53 @@ To put an image inside a post, upload it as the cover (or in any image field) an
 ## Add a new field later
 All editable content is defined in **`schema.js`**. Add a field there, and the admin form and server validation pick it up automatically. To show it on the site, render it in `public/js/site.js`.
 
-## Put it online
-It uses the same hosting setup as Car Shine. It needs a host with **persistent storage**, because the database and uploads are saved to disk.
+## Put it online for free (Render + Turso)
+Your content and uploaded files (photos, CV) are stored in the database. On your computer that's the file `data/site.db`. Online, it's a free **Turso** cloud database, so Render's free plan can restart without losing anything.
 
-- **Free:** an Oracle Cloud Always Free VM with pm2 and Caddy. Follow the same steps as the Car Shine guide, using this repository instead.
-- **Paid, easiest:** Railway or Render with a volume mounted at `/data`, and these variables set: `DATA_DIR=/data/db` and `UPLOAD_DIR=/data/uploads`.
+### 1. Create the Turso database
+1. Sign up at **turso.tech** (GitHub login is fine) and create a database, e.g. `portfolio`, in the region closest to Render, such as Frankfurt or London.
+2. Copy its **URL**. It looks like `libsql://portfolio-yourname.turso.io`.
+3. Create a **token** for that database (Database → "Create token"). Copy it, because it's only shown once.
 
+### 2. (Optional) Copy what you already made locally into Turso
+If you've edited the site on your computer and want that content online, run this in the project folder:
+```
+TURSO_DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." npm run copy-to-turso
+```
+This **replaces** what's in Turso with your local content: texts, projects, messages, photos, CV and admin login. Skip this step to start fresh online with the default content.
+
+### 3. Render settings (New + → Web Service → your GitHub repo)
+| Setting | Value |
+|---|---|
+| Language | Node |
+| Build Command | `npm install` |
+| Start Command | `npm start` |
+| Instance Type | Free |
+| Health Check Path | `/health` |
+
+Environment variables:
+| Key | Value |
+|---|---|
+| `TURSO_DATABASE_URL` | the `libsql://…` URL from step 1 |
+| `TURSO_AUTH_TOKEN` | the token from step 1 |
+| `ADMIN_USER` / `ADMIN_PASSWORD` | your login (only used the very first time, when the database has no admin yet) |
+| `JWT_SECRET` | output of `openssl rand -hex 32` |
+| `NODE_VERSION` | `22` |
+| `GITHUB_TOKEN` | optional: read-only public token for the GitHub section |
+
+If you ran step 2, your login is the one you used locally, and `ADMIN_USER`/`ADMIN_PASSWORD` are ignored.
+
+### All settings
 | Variable | Default | Purpose |
 |---|---|---|
-| `PORT` | 3000 | Port |
+| `PORT` | 3000 | Port (Render sets this itself) |
+| `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` | not set → local file | Cloud database |
+| `DATA_DIR` | ./data | Where the local database file lives |
 | `ADMIN_USER` / `ADMIN_PASSWORD` | admin / changeme123 | First-run login only |
-| `DATA_DIR` | ./data | Database location |
-| `UPLOAD_DIR` | ./uploads | Uploaded images and CV |
-| `JWT_SECRET` | auto-generated | Signs login cookies |
+| `JWT_SECRET` | made once, kept in the database | Signs login cookies |
+| `GITHUB_TOKEN` | not set | Higher GitHub API limit |
 
-**Backups:** copy `data/` and `uploads/`.
+**Backups:** locally, copy `data/site.db`. On Turso, use the dashboard, or `turso db shell portfolio .dump > backup.sql`.
 
 ## Security built in
 - Hashed passwords (bcrypt) and an httpOnly login cookie.
@@ -71,8 +103,9 @@ It uses the same hosting setup as Car Shine. It needs a host with **persistent s
 
 ## Files
 ```
-server.js        routes, API, auth, uploads
-db.js            SQLite tables, first-run content
+server.js        routes, API, auth, uploads (stored in the database)
+db.js            database (local SQLite file or Turso), tables, first-run content
+scripts/copy-to-turso.js   one-time copy of local content to Turso
 schema.js        every editable field + first-run content from LinkedIn
 public/index.html, post.html, css/site.css, js/common.js, js/site.js   website
 public/admin/    admin panel

@@ -4,19 +4,20 @@
   "description": "Personal profile website with admin panel",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "copy-to-turso": "node scripts/copy-to-turso.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@libsql/client": "^0.18.0",
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^13.0.3",
     "cookie-parser": "^1.4.7",
     "express": "^5.3.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.5.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }
